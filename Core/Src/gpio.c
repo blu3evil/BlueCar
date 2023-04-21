@@ -361,15 +361,16 @@ void Motor_Set_Pwm(uint8_t id, int16_t pulse)//这里输入的是pwm
         if (pulse >= 0)
         {
 
-		 HAL_GPIO_WritePin(Ain1_GPIO_Port,Ain1_Pin,GPIO_PIN_RESET);
-		 HAL_GPIO_WritePin(Ain2_GPIO_Port,Ain2_Pin,GPIO_PIN_SET);
+
+		 HAL_GPIO_WritePin(Ain1_GPIO_Port,Ain1_Pin,GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(Ain2_GPIO_Port,Ain2_Pin,GPIO_PIN_RESET);
 		 __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1,pulse);
         }
         else
         {
 
-		 HAL_GPIO_WritePin(Ain1_GPIO_Port,Ain1_Pin,GPIO_PIN_SET);
-		 HAL_GPIO_WritePin(Ain2_GPIO_Port,Ain2_Pin,GPIO_PIN_RESET);
+		 HAL_GPIO_WritePin(Ain1_GPIO_Port,Ain1_Pin,GPIO_PIN_RESET);
+		 HAL_GPIO_WritePin(Ain2_GPIO_Port,Ain2_Pin,GPIO_PIN_SET);
 		 __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1,pulse);
         }
         break;
@@ -396,14 +397,14 @@ void Motor_Set_Pwm(uint8_t id, int16_t pulse)//这里输入的是pwm
     {
         if (pulse >= 0)
         {
-		 HAL_GPIO_WritePin(Cin1_GPIO_Port,Cin1_Pin,GPIO_PIN_RESET);
-		 HAL_GPIO_WritePin(Cin2_GPIO_Port,Cin2_Pin,GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(Cin1_GPIO_Port,Cin1_Pin,GPIO_PIN_SET);
+		 HAL_GPIO_WritePin(Cin2_GPIO_Port,Cin2_Pin,GPIO_PIN_RESET);
 		 __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_3,pulse);
         }
         else
         {
-		 HAL_GPIO_WritePin(Cin1_GPIO_Port,Cin1_Pin,GPIO_PIN_SET);
-		 HAL_GPIO_WritePin(Cin2_GPIO_Port,Cin2_Pin,GPIO_PIN_RESET);
+		 HAL_GPIO_WritePin(Cin1_GPIO_Port,Cin1_Pin,GPIO_PIN_RESET);
+		 HAL_GPIO_WritePin(Cin2_GPIO_Port,Cin2_Pin,GPIO_PIN_SET);
 		 __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_3,pulse);
         }
         break;
@@ -429,6 +430,15 @@ void Motor_Set_Pwm(uint8_t id, int16_t pulse)//这里输入的是pwm
     default:
         break;
     }
+}
+
+/*Blu3's testing*/
+void MotorFollowTest(int16_t err)
+{
+	Motor_Set_Pwm(1, 2000 + err * 50);
+	Motor_Set_Pwm(3, 2000 + err * 50);
+	Motor_Set_Pwm(4, 2000 - err * 50);
+	Motor_Set_Pwm(2, 2000 - err * 50);
 }
 
 /* USER CODE END 2 */

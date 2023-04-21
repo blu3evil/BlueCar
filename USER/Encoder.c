@@ -31,10 +31,10 @@ void Encoderinit(void)
 
 void GetEncoderPulse(void)
 {    //配合小车轮子运动方向，可进行取反操作
-    encoderPulse[0] = ((short)__HAL_TIM_GET_COUNTER(&htim2)); //1号电机
-    encoderPulse[1] = -((short)__HAL_TIM_GET_COUNTER(&htim3)); //2号电机
-    encoderPulse[2] = ((short)__HAL_TIM_GET_COUNTER(&htim4)); //3号电机
-    encoderPulse[3] = -((short)__HAL_TIM_GET_COUNTER(&htim5)); //4号电机	
+    encoderPulse[0] = -((short)__HAL_TIM_GET_COUNTER(&htim2)); //1号电机
+    encoderPulse[1] = ((short)__HAL_TIM_GET_COUNTER(&htim3)); //2号电机
+    encoderPulse[2] = -((short)__HAL_TIM_GET_COUNTER(&htim4)); //3号电机
+    encoderPulse[3] = ((short)__HAL_TIM_GET_COUNTER(&htim5)); //4号电机	
  
     __HAL_TIM_GET_COUNTER(&htim2) = 0;   //计数值重新清零
     __HAL_TIM_GET_COUNTER(&htim3) = 0;  

@@ -1,6 +1,6 @@
 bluecar\encoder.o: ..\USER\Encoder.c
 bluecar\encoder.o: ..\USER\Encoder.h
-bluecar\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+bluecar\encoder.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 bluecar\encoder.o: ../Core/Inc/tim.h
 bluecar\encoder.o: ../Core/Inc/main.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
@@ -16,7 +16,7 @@ bluecar\encoder.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 bluecar\encoder.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-bluecar\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+bluecar\encoder.o: D:\Keil5\ARM\ARMCC\Bin\..\include\stddef.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h
 bluecar\encoder.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio_ex.h

@@ -2,6 +2,8 @@
 "bluecar\startup_stm32f103xe.o"
 "bluecar\oled.o"
 "bluecar\encoder.o"
+"bluecar\niming.o"
+"bluecar\pid.o"
 "bluecar\main.o"
 "bluecar\gpio.o"
 "bluecar\dma.o"
@@ -27,6 +29,6 @@
 "bluecar\stm32f1xx_hal_uart.o"
 "bluecar\system_stm32f1xx.o"
 --library_type=microlib --strict --scatter "Bluecar\Bluecar.sct"
---summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "Bluecar.map" -o Bluecar\Bluecar.axf

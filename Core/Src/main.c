@@ -23,6 +23,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "math.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -35,6 +36,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "Encoder.h"
+#include "niming.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +57,10 @@
 
 /* USER CODE BEGIN PV */
 uint8_t BLUdata;
+uint8_t REDdata = 0;
+uint8_t RXEbuff[64];
+uint8_t RXEcount;
+int16_t rho_err = 0;
 extern int g_Encoder_M1_Now;
 extern int g_Encoder_M2_Now;
 extern int g_Encoder_M3_Now;
@@ -117,10 +123,12 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   __HAL_UART_ENABLE_IT(&huart3,UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart2,UART_IT_RXNE);
   OLED_Init();
   OLED_Fill(0x00);
   OLED_ShowString(0,0,(uint8_t*)"Ready?!!",2);  
   HAL_UART_Receive_IT(&huart3,&BLUdata,1);
+	HAL_UART_Receive_IT(&huart2,&REDdata,1);
   HAL_UART_Transmit(&huart3,(unsigned char*)"I am ready for your command\r\n",27,2000);
 //  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_1);
 //  HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
@@ -149,21 +157,25 @@ int main(void)
 //	  sprintf(E2,"%d",encoderPulse[1]);
 //	  sprintf(E3,"%d",encoderPulse[2]);
 //	  sprintf(E4,"%d",encoderPulse[3]);	  
-	  sprintf(E1,"%.2f",motorspeed1);//测10ms内的速度
-	  sprintf(E2,"%.2f",motorspeed2);
-	  sprintf(E3,"%.2f",motorspeed3);
-	  sprintf(E4,"%.2f",motorspeed4);	
-	  HAL_UART_Transmit(&huart3,(unsigned char*)"E1:",4,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)E1,5,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)"E2:",4,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)E2,5,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)"E3:",4,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)E3,5,0xff);	  
-	  HAL_UART_Transmit(&huart3,(unsigned char*)"E4:",4,0xff);
-	  HAL_UART_Transmit(&huart3,(unsigned char*)E4,5,0xff);	
-	  HAL_UART_Transmit(&huart3,(unsigned char*)"\n",3,0xff);
-	  OLED_ShowString(0,5,(uint8_t*)E1,2);
-	  
+//	  sprintf(E1,"%.2f",motorspeed1);//测10ms内的速度
+//	  sprintf(E2,"%.2f",motorspeed2);
+//	  sprintf(E3,"%.2f",motorspeed3);
+//	  sprintf(E4,"%.2f",motorspeed4);	
+//	  sprintf(E1,"%d",(int)motorspeed1);//测10ms内的速度
+//	  sprintf(E2,"%d",(int)motorspeed2);
+//	  sprintf(E3,"%d",(int)motorspeed3);
+//	  sprintf(E4,"%d",(int)motorspeed4);	
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)"E1:",4,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)E1,5,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)"E2:",4,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)E2,5,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)"E3:",4,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)E3,5,0xff);	  
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)"E4:",4,0xff);
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)E4,5,0xff);	
+//	  HAL_UART_Transmit(&huart3,(unsigned char*)"\n",3,0xff);
+//	  OLED_ShowString(0,5,(uint8_t*)E1,2);
+	  ANO_DT_Send_F2((int)motorspeed1,(int)motorspeed2,(int)motorspeed3,(int)motorspeed4);
 	  //HAL_Delay(10);
   }
   /* USER CODE END 3 */
@@ -212,6 +224,33 @@ void SystemClock_Config(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		HAL_UART_Receive_IT(&huart3,&BLUdata,1);
+		HAL_UART_Receive_IT(&huart2,&REDdata,1);		
+		if(huart->Instance == USART2)
+		{
+			RXEbuff[RXEcount++] = REDdata;
+			if (REDdata == ']')
+			{
+				rho_err = 0;
+				for (uint8_t i = 2; i < RXEcount; i++)
+				{
+					if (RXEbuff[i] != '[' || RXEbuff[i] != ']')
+						rho_err += (int16_t) pow(10.0, RXEcount - 2 - i) * (RXEbuff[i] - '0');
+				}
+				if (RXEbuff[1] == '-')
+					rho_err *= -1;
+				if (rho_err > 50 || rho_err < -50)
+					rho_err = 0;
+				printf("Received String:%s, Computed to interger:%d\n", (unsigned char*)RXEbuff, rho_err);
+				//HAL_UART_Transmit(&huart2, (unsigned char*) RXEbuff, RXEcount, 0xff);
+				RXEcount = 0;
+				memset(RXEbuff, 0, sizeof(RXEbuff));
+			}
+			if (RXEcount == 63)
+			{
+				RXEcount = 0;
+				memset(RXEbuff, 0, sizeof(RXEbuff));
+			}
+		}
 		if(huart->Instance == USART3)
 			{
 				if(BLUdata==0x2A)//Using Hex
